@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Focus Dial">
+  <rect width="512" height="512" rx="112" fill="#17191f" />
+  <circle cx="256" cy="256" r="163" fill="#222622" stroke="#c9f45b" stroke-width="27" />
+  <path d="M256 133v123l83 48" fill="none" stroke="#f2f5ee" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" />
+  <circle cx="256" cy="256" r="24" fill="#a78bfa" />
+</svg>

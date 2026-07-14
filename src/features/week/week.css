@@ -1,0 +1,361 @@
+.app-content--week {
+  place-items: start center;
+  padding: 1rem max(1rem, env(safe-area-inset-right)) 2rem
+    max(1rem, env(safe-area-inset-left));
+  text-align: left;
+}
+
+.week-screen {
+  display: grid;
+  width: min(100%, 68rem);
+  min-width: 0;
+  gap: 1rem;
+}
+
+.week-header,
+.week-panel__heading {
+  display: flex;
+  min-width: 0;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.week-header h1,
+.week-panel h2,
+.week-panel h3,
+.week-header p,
+.week-panel p {
+  margin: 0;
+}
+
+.week-header h1 {
+  text-align: left;
+}
+
+.week-header__range,
+.week-kicker {
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.week-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.week-nav button {
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.week-nav button:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.week-nav button:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.week-empty {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-secondary);
+  border-radius: 0.8rem;
+  background: rgb(167 139 250 / 10%);
+}
+
+.week-panel {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.9rem;
+  background: var(--color-surface);
+}
+
+.week-panel h2 {
+  margin-top: 0.15rem;
+  font-size: clamp(1.1rem, 5vw, 1.45rem);
+}
+
+.week-panel__heading > p,
+.week-muted {
+  color: var(--color-text-muted);
+}
+
+.week-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  min-height: 14rem;
+  gap: 0.4rem;
+  align-items: end;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week-day {
+  display: grid;
+  min-width: 0;
+  gap: 0.45rem;
+}
+
+.week-day__chart {
+  display: flex;
+  height: 9rem;
+  align-items: end;
+  border-radius: 0.4rem;
+  background: rgb(255 255 255 / 4%);
+}
+
+.week-day__bar {
+  display: flex;
+  width: 100%;
+  min-height: 2px;
+  height: max(2px, calc(var(--day-share) * 100%));
+  flex-direction: column-reverse;
+  overflow: hidden;
+  border-radius: 0.35rem 0.35rem 0 0;
+}
+
+.week-day__segment {
+  min-height: 2px;
+  flex: var(--segment-share) 1 0%;
+  background: var(--activity-color);
+}
+
+.week-day > p {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.week-comparison {
+  display: block;
+  margin-top: 0.75rem;
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.week-activities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.week-activity-card {
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: rgb(0 0 0 / 10%);
+}
+
+.week-stats {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.7rem 0;
+}
+
+.week-stats div,
+.week-bands li {
+  display: flex;
+  min-width: 0;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.week-stats dt,
+.week-bands span {
+  color: var(--color-text-muted);
+}
+
+.week-stats dd {
+  margin: 0;
+  text-align: right;
+}
+
+.week-bands,
+.week-goals,
+.week-emotion-totals,
+.week-emotion-days,
+.week-emotion-frequencies ul,
+.week-patterns {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week-bands li {
+  min-height: 2rem;
+  align-items: center;
+}
+
+.week-goals li,
+.week-emotion-totals li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, 30%);
+  min-height: 44px;
+  gap: 1rem;
+  align-items: center;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.week-goals li:first-child,
+.week-emotion-totals li:first-child {
+  border-top: 0;
+}
+
+.week-goals li > div,
+.week-emotion-totals li {
+  min-width: 0;
+}
+
+.week-goals strong,
+.week-goals span,
+.week-emotion-totals span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.week-goals span,
+.week-emotion-totals span,
+.week-emotion-days {
+  color: var(--color-text-muted);
+}
+
+.week-goals progress {
+  width: 100%;
+  accent-color: var(--color-primary);
+}
+
+.week-emotion-frequencies {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.week-emotion-frequencies section {
+  min-width: 0;
+  padding: 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.week-emotion-frequencies li {
+  overflow-wrap: anywhere;
+  color: var(--color-text-muted);
+}
+
+.week-emotion-frequencies strong {
+  color: var(--color-text);
+}
+
+.week-mood-strip {
+  display: flex;
+  min-width: 0;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  padding: 0 0 0.5rem;
+  overflow-x: auto;
+  list-style: none;
+}
+
+.week-mood-strip li {
+  display: grid;
+  min-width: 8.75rem;
+  gap: 0.2rem;
+  padding: 0.7rem;
+  border: 1px solid var(--emotion-color);
+  border-top-width: 0.35rem;
+  border-radius: 0.65rem;
+}
+
+.week-mood-strip time,
+.week-mood-strip span {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.week-patterns li {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.week-patterns li:first-child {
+  border-top: 0;
+}
+
+@media (max-width: 540px) {
+  .week-header,
+  .week-panel__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .week-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .week-days {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    gap: 0.6rem;
+  }
+
+  .week-day {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .week-day__chart {
+    height: 2rem;
+  }
+
+  .week-day__bar {
+    width: max(2px, calc(var(--day-share) * 100%));
+    height: 100%;
+    flex-direction: row;
+  }
+
+  .week-day > p {
+    font-size: 0.75rem;
+  }
+
+  .week-goals li,
+  .week-emotion-totals li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .week-emotion-frequencies {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .week-screen *,
+  .week-screen *::before,
+  .week-screen *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

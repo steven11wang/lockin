@@ -1,0 +1,166 @@
+.emotion-sheet__backdrop {
+  position: fixed;
+  z-index: 7;
+  inset: 0;
+  display: grid;
+  min-width: 320px;
+  padding: 1rem;
+  place-items: center;
+  overflow-y: auto;
+  background: rgb(0 0 0 / 65%);
+}
+
+.emotion-sheet {
+  width: min(100%, 32rem);
+  min-width: 0;
+  max-height: calc(100dvh - 2rem);
+  margin: auto;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  color: var(--color-text);
+  background: var(--color-background);
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 45%);
+  overflow-y: auto;
+}
+
+.emotion-sheet h2 {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+}
+
+.emotion-sheet form {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+}
+
+.emotion-sheet__choices {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.emotion-sheet__choices legend,
+.emotion-sheet__comment > span {
+  margin-bottom: 0.45rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+
+.emotion-sheet__choice-grid,
+.emotion-sheet__intensity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.emotion-sheet__choice-grid label,
+.emotion-sheet__intensity-grid label {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 44px;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.emotion-sheet__choice-grid label:has(input:checked),
+.emotion-sheet__intensity-grid label:has(input:checked) {
+  border-color: var(--emotion-color, var(--color-primary));
+  box-shadow: inset 0 0 0 1px var(--emotion-color, var(--color-primary));
+}
+
+.emotion-sheet input[type='radio'] {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--emotion-color, var(--color-primary));
+}
+
+.emotion-sheet input[type='radio']:focus-visible,
+.emotion-sheet textarea:focus-visible,
+.emotion-sheet button:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.emotion-sheet__comment {
+  display: grid;
+  min-width: 0;
+}
+
+.emotion-sheet textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  resize: vertical;
+}
+
+.emotion-sheet__error {
+  margin: 0;
+  color: #ff9f9f;
+  font-weight: 750;
+}
+
+.emotion-sheet__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.emotion-sheet button {
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+}
+
+.emotion-sheet button[type='submit'] {
+  border-color: var(--color-primary);
+  color: #171a18;
+  background: var(--color-primary);
+}
+
+.emotion-sheet button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 380px) {
+  .emotion-sheet__choice-grid,
+  .emotion-sheet__intensity-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emotion-sheet * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
