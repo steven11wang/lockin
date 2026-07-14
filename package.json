@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:pages": "VITE_BASE_PATH=/lockin/ npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "verify:pages": "npm run build:pages && node scripts/verify-pages-build.mjs",
     "check": "npm run test && npm run build"
   },
   "dependencies": {

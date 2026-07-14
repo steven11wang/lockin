@@ -24,6 +24,18 @@ npm run test:e2e
 
 The Playwright configuration uses the system copy of Google Chrome at `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome` for both projects; it does not use Playwright's bundled browser. Install Chrome at that location on macOS, or change `chromeExecutable` in `playwright.config.ts` to the executable path for your Chrome or Chromium installation.
 
+## Deploy free on GitHub Pages
+
+The included GitHub Actions workflow builds the Vite app for the repository path `/lockin/` and deploys only the generated `dist` folder. No custom domain is needed.
+
+In the GitHub repository, open **Settings** → **Pages** and set **Source** to **GitHub Actions** once. Then push `main`; the **Deploy Focus Dial to GitHub Pages** workflow publishes the app at `https://steven11wang.github.io/lockin/`.
+
+To verify the Pages artifact locally:
+
+```sh
+npm run verify:pages
+```
+
 ## Install and use offline
 
 Installation and offline use should be tried with a production build, not the development server:
