@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { RepositoryProvider } from '../../app/RepositoryContext';
 import type { FocusDialRepository, Goal, Session } from '../../domain/models';
 import { createMemoryRepository } from '../../storage/memoryRepository';
@@ -235,6 +235,7 @@ describe('FocusScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Resume Study' }));
     await settleRepositoryQueries();
     expect(screen.getByRole('button', { name: 'Stop' })).toBeVisible();
+    expect(screen.queryByRole('button', { name: /Start / })).not.toBeInTheDocument();
 
     vi.setSystemTime(30_000);
     fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
@@ -242,6 +243,74 @@ describe('FocusScreen', () => {
     expect(screen.queryByRole('button', { name: 'Resume Study' })).not.toBeInTheDocument();
     expect(await repository.getActiveSession()).toBeUndefined();
     expect(await repository.getPreferences()).toMatchObject({ lastPausedActivityId: null });
+  });
+
+  it('uses the center dial button as Start before a session and Stop while active', async () => {
+    const repository = createMemoryRepository();
+    renderFocus(repository);
+    await settleRepositoryQueries();
+
+    expect(screen.getByRole('button', { name: 'Start Study' })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Start Study' }));
+    await settleRepositoryQueries();
+
+    expect(screen.getByRole('button', { name: 'Stop' })).toBeVisible();
+    expect(screen.queryByRole('button', { name: /Start / })).not.toBeInTheDocument();
+    expect(await repository.getActiveSession()).toMatchObject({ activityId: STUDY_ID });
+
+    vi.setSystemTime(20_000);
+    fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
+    await settleRepositoryQueries();
+    expect(await repository.getActiveSession()).toBeUndefined();
+    expect(screen.getByRole('button', { name: 'Start Study' })).toBeVisible();
+  });
+
+  it('prompts to recover a forgotten long-running session with keep, end earlier, and switch', async () => {
+    const now = new Date(2026, 6, 13, 16, 0).getTime();
+    const startedAt = new Date(2026, 6, 13, 12, 0).getTime();
+    vi.setSystemTime(now);
+    const repository = createMemoryRepository({ sessions: [activeSession(STUDY_ID, startedAt)] });
+    renderFocus(repository);
+    await settleRepositoryQueries();
+
+    const dialog = screen.getByRole('dialog', { name: 'Still going?' });
+    expect(dialog).toHaveTextContent('Still Study? You started 4 hours ago.');
+    expect(within(dialog).getByRole('button', { name: 'Keep going' })).toBeVisible();
+    expect(within(dialog).getByRole('button', { name: 'Ended earlier' })).toBeVisible();
+    expect(within(dialog).getByRole('button', { name: 'Switch activity' })).toBeVisible();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Keep going' }));
+    expect(screen.queryByRole('dialog', { name: 'Still going?' })).not.toBeInTheDocument();
+    expect(await repository.getActiveSession()).toMatchObject({ activityId: STUDY_ID, endedAt: null });
+  });
+
+  it('ends a forgotten session earlier through the end-time editor', async () => {
+    const now = new Date(2026, 6, 13, 16, 0).getTime();
+    const startedAt = new Date(2026, 6, 13, 12, 0).getTime();
+    const endedAt = new Date(2026, 6, 13, 13, 30).getTime();
+    vi.setSystemTime(now);
+    const repository = createMemoryRepository({ sessions: [activeSession(STUDY_ID, startedAt)] });
+    renderFocus(repository);
+    await settleRepositoryQueries();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ended earlier' }));
+    const endDialog = screen.getByRole('dialog', { name: 'When did Study end?' });
+    expect(endDialog).toBeVisible();
+
+    fireEvent.change(within(endDialog).getByLabelText('End time'), {
+      target: { value: '2026-07-13T13:30' },
+    });
+    fireEvent.click(within(endDialog).getByRole('button', { name: 'End session' }));
+    await settleRepositoryQueries();
+
+    expect(await repository.getActiveSession()).toBeUndefined();
+    expect(await repository.listSessions()).toEqual([
+      expect.objectContaining({
+        activityId: STUDY_ID,
+        startedAt,
+        endedAt,
+      }),
+    ]);
   });
 
   it('undoes a switch to restore the previous active activity for ten seconds', async () => {

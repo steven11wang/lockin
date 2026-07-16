@@ -14,6 +14,7 @@ import type {
 import { EmotionSheet } from '../emotions/EmotionSheet';
 import { calculateGoalProgress, describeGoalProgress } from '../goals/goalProgress';
 import { aggregateActivities, getWeekRange } from '../week/aggregate';
+import { DayClocks } from './DayClocks';
 import { SessionEditor, type SessionEditorValue } from './SessionEditor';
 import {
   clipSessionToRange,
@@ -462,8 +463,31 @@ export function TodayScreen({ date = new Date() }: TodayScreenProps): JSX.Elemen
         )}
       </section>
 
+      <DayClocks
+        dayStart={range.start}
+        now={now}
+        sessions={sessions}
+        emotionEntries={visibleEmotionEntries}
+        activities={activities}
+        emotions={emotions}
+        hourCycle={preferences.hourCycle}
+        selectedEmotionId={selectedEmotionId}
+        onSelectSession={(stored) => openEditor({
+          session: stored,
+          start: stored.startedAt,
+          end: stored.endedAt,
+        })}
+        onSelectGap={(start, end) => openNewEntry(start, end)}
+        onSelectEmotion={(entry) => setSelectedEmotionId((current) => (
+          current === entry.id ? null : entry.id
+        ))}
+      />
+
       <section className="today-timeline" aria-labelledby="timeline-heading">
-        <h2 id="timeline-heading">Timeline</h2>
+        <h2 id="timeline-heading">Timeline list</h2>
+        <p className="today-timeline__hint">
+          Text list for keyboard and screen-reader friendly editing.
+        </p>
         {timelineItems.length === 0 && (
           <p className="today-empty">
             {emotionEntries.length > 0 && normalizedSearch !== ''

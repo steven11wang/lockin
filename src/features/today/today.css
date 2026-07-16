@@ -95,10 +95,141 @@
 .today-summary__goals,
 .today-emotions,
 .today-timeline,
-.today-gaps {
+.today-gaps,
+.day-clocks {
   border: 1px solid var(--color-border);
   border-radius: 0.85rem;
   background: var(--color-surface);
+}
+
+.day-clocks {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.day-clocks__header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.day-clocks__header h2,
+.today-timeline h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.day-clocks__hint,
+.today-timeline__hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.day-clocks__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.day-clock {
+  display: grid;
+  min-width: 0;
+  gap: 0.55rem;
+  margin: 0;
+  justify-items: center;
+}
+
+.day-clock__caption {
+  display: grid;
+  gap: 0.1rem;
+  justify-items: center;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.day-clock__caption strong {
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.day-clock__svg {
+  width: min(100%, 18rem);
+  aspect-ratio: 1;
+  touch-action: manipulation;
+}
+
+.day-clock__face {
+  fill: #141714;
+  stroke: var(--color-border);
+  stroke-width: 1.2;
+}
+
+.day-clock__inner {
+  fill: var(--color-surface);
+  stroke: rgb(201 244 91 / 18%);
+  stroke-width: 0.8;
+  stroke-dasharray: 2 2;
+}
+
+.day-clock__hour {
+  fill: var(--color-text-muted);
+  font-size: 4.2px;
+  font-weight: 750;
+  pointer-events: none;
+}
+
+.day-clock__segment {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 120ms ease;
+}
+
+.day-clock__segment--session {
+  fill: var(--segment-color, #6b716b);
+  opacity: 0.92;
+}
+
+.day-clock__segment--untracked {
+  fill: #2a2e2a;
+  stroke: #3a4039;
+  stroke-width: 0.35;
+}
+
+.day-clock__segment:hover,
+.day-clock__segment:focus-visible {
+  opacity: 1;
+  filter: brightness(1.12);
+}
+
+.day-clock__segment:focus-visible {
+  stroke: var(--color-secondary);
+  stroke-width: 1.1;
+}
+
+.day-clock__emotion-hit {
+  fill: var(--emotion-color, #b9c0b5);
+  stroke: var(--color-background);
+  stroke-width: 0.9;
+  cursor: pointer;
+  outline: none;
+}
+
+.day-clock__emotion-hit:focus-visible {
+  stroke: var(--color-secondary);
+  stroke-width: 1.4;
+}
+
+@media (min-width: 768px) {
+  .day-clocks__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .day-clock__svg {
+    width: min(100%, 20rem);
+  }
 }
 
 .today-summary > div {
@@ -177,10 +308,13 @@
 }
 
 .today-emotions h2,
-.today-timeline h2,
 .today-gaps h2 {
   margin: 0 0 0.75rem;
   font-size: 1.1rem;
+}
+
+.today-timeline h2 {
+  margin: 0 0 0.35rem;
 }
 
 .today-emotions__header {

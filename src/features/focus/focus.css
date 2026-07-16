@@ -175,10 +175,20 @@
   overflow-wrap: anywhere;
 }
 
+.dial__start--stop {
+  color: #fff5f5;
+  background: #d64545;
+  box-shadow: 0 0 0 3px rgb(214 69 69 / 28%);
+}
+
 .dial__start:disabled {
   color: var(--color-text-muted);
   background: var(--color-surface);
   cursor: not-allowed;
+}
+
+.dial__start--stop:hover {
+  background: #e05555;
 }
 
 .focus-actions {

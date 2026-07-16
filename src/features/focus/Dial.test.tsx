@@ -9,13 +9,17 @@ const activities = DEFAULT_ACTIVITIES.slice(0, 4);
 interface DialHarnessProps {
   initialId?: string;
   items?: readonly Activity[];
+  isActive?: boolean;
   onActivate?: (activityId: string) => void;
+  onStop?: () => void;
 }
 
 function DialHarness({
   initialId = activities[0]?.id ?? '',
   items = activities,
+  isActive = false,
   onActivate = () => undefined,
+  onStop = () => undefined,
 }: DialHarnessProps) {
   const [selectedId, setSelectedId] = useState(initialId);
 
@@ -23,8 +27,10 @@ function DialHarness({
     <Dial
       activities={items}
       selectedId={selectedId}
+      isActive={isActive}
       onSelect={setSelectedId}
       onActivate={onActivate}
+      onStop={onStop}
     />
   );
 }
@@ -117,5 +123,60 @@ describe('Dial', () => {
       'Social',
     ]);
     expect(screen.getByRole('button', { name: 'Start Study' })).toBeVisible();
+  });
+
+  it('shows Start activity before a session and a single red Stop control while active', () => {
+    const onStop = vi.fn();
+    const { rerender } = render(
+      <Dial
+        activities={activities}
+        selectedId="activity-study"
+        isActive={false}
+        onSelect={() => undefined}
+        onActivate={() => undefined}
+        onStop={onStop}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Start Study' })).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Stop' })).not.toBeInTheDocument();
+
+    rerender(
+      <Dial
+        activities={activities}
+        selectedId="activity-exercise"
+        isActive
+        onSelect={() => undefined}
+        onActivate={() => undefined}
+        onStop={onStop}
+      />,
+    );
+
+    const stop = screen.getByRole('button', { name: 'Stop' });
+    expect(stop).toBeVisible();
+    expect(stop).toHaveClass('dial__start--stop');
+    expect(screen.queryByRole('button', { name: /Start / })).not.toBeInTheDocument();
+
+    fireEvent.click(stop);
+    expect(onStop).toHaveBeenCalledTimes(1);
+  });
+
+  it('switches by tapping another dial option while a session is active', () => {
+    const onActivate = vi.fn();
+    const onSelect = vi.fn();
+    render(
+      <Dial
+        activities={activities}
+        selectedId="activity-study"
+        isActive
+        onSelect={onSelect}
+        onActivate={onActivate}
+        onStop={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('option', { name: 'Exercise' }));
+    expect(onSelect).toHaveBeenCalledWith('activity-exercise');
+    expect(onActivate).toHaveBeenCalledWith('activity-exercise');
   });
 });

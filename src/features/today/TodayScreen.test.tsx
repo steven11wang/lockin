@@ -163,6 +163,53 @@ describe('TodayScreen', () => {
     expect(screen.getByLabelText('End')).toHaveValue('2026-07-13T10:00');
   });
 
+  it('renders AM and PM clocks and opens the editor from a session arc', async () => {
+    const repository = createMemoryRepository({
+      sessions: [session('study', 'activity-study', 8, 9)],
+    });
+    renderToday(repository);
+    await settleRepositoryQueries();
+
+    expect(screen.getByRole('heading', { name: 'Day clocks' })).toBeVisible();
+    expect(screen.getByLabelText(/Morning clock/)).toBeVisible();
+    expect(screen.getByLabelText(/Afternoon & evening clock/)).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: /Study, 8:00 AM to 9:00 AM/ }));
+    expect(screen.getByRole('dialog', { name: 'Edit entry' })).toBeVisible();
+    expect(screen.getByLabelText('Start')).toHaveValue('2026-07-13T08:00');
+    expect(screen.getByLabelText('End')).toHaveValue('2026-07-13T09:00');
+  });
+
+  it('opens Add entry from an untracked clock section with the range filled in', async () => {
+    const repository = createMemoryRepository({
+      sessions: [
+        session('study', 'activity-study', 8, 9),
+        session('exercise', 'activity-exercise', 10, 11),
+      ],
+    });
+    renderToday(repository);
+    await settleRepositoryQueries();
+
+    fireEvent.click(screen.getByRole('button', { name: /Untracked, 9:00 AM to 10:00 AM/ }));
+    expect(screen.getByRole('dialog', { name: 'Add entry' })).toBeVisible();
+    expect(screen.getByLabelText('Start')).toHaveValue('2026-07-13T09:00');
+    expect(screen.getByLabelText('End')).toHaveValue('2026-07-13T10:00');
+  });
+
+  it('keeps an accessible timeline list for keyboard and screen-reader users', async () => {
+    const repository = createMemoryRepository({
+      sessions: [session('study', 'activity-study', 8, 9)],
+    });
+    renderToday(repository);
+    await settleRepositoryQueries();
+
+    expect(screen.getByRole('heading', { name: 'Timeline list' })).toBeVisible();
+    expect(screen.getByRole('list', { name: 'Daily timeline' })).toBeVisible();
+    expect(within(screen.getByRole('list', { name: 'Daily timeline' })).getByRole('heading', {
+      name: 'Study',
+    })).toBeVisible();
+  });
+
   it('shows untracked time only between the first and last session or emotion event', async () => {
     const repository = createMemoryRepository({
       sessions: [session('study', 'activity-study', 9, 10)],
@@ -479,8 +526,10 @@ describe('TodayScreen', () => {
       target: { value: 'PROGRESS' },
     });
 
-    expect(screen.getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' })).toBeVisible();
-    expect(screen.queryByRole('button', { name: 'Tired, intensity 3, 10:00 AM' })).not.toBeInTheDocument();
+    const timeline = screen.getByRole('list', { name: 'Daily timeline' });
+    expect(within(timeline).getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' })).toBeVisible();
+    expect(within(timeline).queryByRole('button', { name: 'Tired, intensity 3, 10:00 AM' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Tired, intensity 3/ })).not.toBeInTheDocument();
   });
 
   it('edits and deletes an emotion marker with temporary Undo', async () => {
@@ -497,7 +546,8 @@ describe('TodayScreen', () => {
     renderToday(repository);
     await settleRepositoryQueries();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' }));
+    const timeline = screen.getByRole('list', { name: 'Daily timeline' });
+    fireEvent.click(within(timeline).getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' }));
     fireEvent.click(screen.getByRole('button', { name: 'Edit Calm check-in' }));
     fireEvent.click(screen.getByRole('radio', { name: '5 — very strong' }));
     fireEvent.change(screen.getByLabelText('Comment (optional)'), {
@@ -513,7 +563,7 @@ describe('TodayScreen', () => {
     await settleRepositoryQueries();
     expect(await repository.listEmotionEntries()).toEqual([original]);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' }));
+    fireEvent.click(within(timeline).getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' }));
     fireEvent.click(screen.getByRole('button', { name: 'Delete Calm check-in' }));
     await settleRepositoryQueries();
     expect(await repository.listEmotionEntries()).toEqual([]);
@@ -529,7 +579,8 @@ describe('TodayScreen', () => {
     renderToday(repository);
     await settleRepositoryQueries();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' }));
+    const timeline = screen.getByRole('list', { name: 'Daily timeline' });
+    fireEvent.click(within(timeline).getByRole('button', { name: 'Calm, intensity 4, 9:00 AM' }));
     const editButton = screen.getByRole('button', { name: 'Edit Calm check-in' });
     editButton.focus();
     fireEvent.click(editButton);
@@ -537,7 +588,7 @@ describe('TodayScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save check-in' }));
     await settleRepositoryQueries();
 
-    expect(screen.getByRole('button', {
+    expect(within(timeline).getByRole('button', {
       name: 'Calm, intensity 5, 9:00 AM',
     })).toHaveFocus();
   });

@@ -85,8 +85,11 @@ test('tracks time, records emotion, and reports the week', async ({ page }) => {
   await page.clock.install({ time: fixedNow });
   await openApp(page);
 
+  await expect(page.getByRole('button', { name: 'Start Study' })).toBeVisible();
   await page.getByRole('button', { name: 'Study', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Study', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Start / })).toHaveCount(0);
   await page.clock.fastForward(65_000);
   const timer = page.getByRole('timer', { name: 'Elapsed time' });
   await expect(timer).toHaveText('00:01:05');
@@ -115,13 +118,19 @@ test('tracks time, records emotion, and reports the week', async ({ page }) => {
     }),
   ]);
 
+  const elapsedBeforeReload = await page.getByRole('timer', { name: 'Elapsed time' }).innerText();
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Study', exact: true })).toBeVisible();
-  await expect(page.getByRole('timer', { name: 'Elapsed time' })).toHaveText('00:01:05');
+  await expect(page.getByRole('timer', { name: 'Elapsed time' })).toHaveText(elapsedBeforeReload);
+  await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Today' }).click();
   await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
-  const marker = page.getByRole('button', { name: /Focused, intensity 4/ });
+  await expect(page.getByRole('heading', { name: 'Day clocks' })).toBeVisible();
+  await expect(page.getByLabel(/Morning clock/)).toBeVisible();
+  await expect(page.getByLabel(/Afternoon & evening clock/)).toBeVisible();
+  const marker = page.getByRole('list', { name: 'Daily timeline' })
+    .getByRole('button', { name: /Focused, intensity 4/ });
   await expect(marker).toBeVisible();
   await marker.click();
   await expect(page.getByText('The library is quiet today.')).toBeVisible();
@@ -138,6 +147,23 @@ test('tracks time, records emotion, and reports the week', async ({ page }) => {
   await expect(page.locator('.week-day__bar').first()).toHaveAttribute('aria-hidden', 'true');
 });
 
+test('recovers a forgotten long-running session from the focus prompt', async ({ page }) => {
+  await page.clock.install({ time: fixedNow });
+  await openApp(page);
+
+  await page.getByRole('button', { name: 'Start Study' }).click();
+  await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible();
+
+  await page.clock.fastForward(4 * 60 * 60 * 1_000);
+  await page.reload();
+  await expect(page.getByRole('dialog', { name: 'Still going?' })).toBeVisible();
+  await expect(page.getByText(/Still Study\? You started 4 hours ago/)).toBeVisible();
+  await page.getByRole('button', { name: 'Keep going' }).click();
+  await expect(page.getByRole('dialog', { name: 'Still going?' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Study', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible();
+});
+
 test('supports keyboard-only dial selection for all seven default activities', async ({ page }) => {
   await page.clock.install({ time: fixedNow });
   await openApp(page);
@@ -152,9 +178,15 @@ test('supports keyboard-only dial selection for all seven default activities', a
   for (const [index, name] of defaultActivityNames.entries()) {
     if (index > 0) await page.keyboard.press('ArrowRight');
     await expect(page.getByRole('option', { name })).toHaveAttribute('aria-selected', 'true');
-    await expect(page.getByRole('button', { name: `Start ${name}` })).toBeVisible();
+    if (index === 0) {
+      await expect(page.getByRole('button', { name: `Start ${name}` })).toBeVisible();
+    } else {
+      await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Start / })).toHaveCount(0);
+    }
     await page.keyboard.press('Enter');
     await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible();
     await page.clock.fastForward(1_000);
   }
 

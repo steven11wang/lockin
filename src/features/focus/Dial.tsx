@@ -4,15 +4,24 @@ import type { Activity, Id } from '../../domain/models';
 export interface DialProps {
   activities: readonly Activity[];
   selectedId: Id | null;
+  isActive: boolean;
   onSelect: (activityId: Id) => void;
   onActivate: (activityId: Id) => void;
+  onStop: () => void;
 }
 
 function wrapIndex(index: number, length: number): number {
   return ((index % length) + length) % length;
 }
 
-export function Dial({ activities, selectedId, onSelect, onActivate }: DialProps): JSX.Element {
+export function Dial({
+  activities,
+  selectedId,
+  isActive,
+  onSelect,
+  onActivate,
+  onStop,
+}: DialProps): JSX.Element {
   const dragging = useRef(false);
   const wheelGestureActive = useRef(false);
   const wheelGestureEnd = useRef<number | null>(null);
@@ -89,6 +98,12 @@ export function Dial({ activities, selectedId, onSelect, onActivate }: DialProps
     dragging.current = false;
   };
 
+  const centerLabel = selected === undefined
+    ? 'Choose an activity'
+    : isActive
+      ? 'Stop'
+      : `Start ${selected.name}`;
+
   return (
     <div className="dial">
       <div
@@ -122,7 +137,10 @@ export function Dial({ activities, selectedId, onSelect, onActivate }: DialProps
               tabIndex={-1}
               style={style}
               key={activity.id}
-              onClick={() => onSelect(activity.id)}
+              onClick={() => {
+                onSelect(activity.id);
+                if (isActive) onActivate(activity.id);
+              }}
             >
               <span className="dial__swatch" aria-hidden="true" />
               <span className="dial__activity-name">{activity.name}</span>
@@ -132,12 +150,18 @@ export function Dial({ activities, selectedId, onSelect, onActivate }: DialProps
       </div>
 
       <button
-        className="dial__start"
+        className={isActive ? 'dial__start dial__start--stop' : 'dial__start'}
         type="button"
-        disabled={selected === undefined}
-        onClick={() => selected !== undefined && onActivate(selected.id)}
+        disabled={selected === undefined && !isActive}
+        onClick={() => {
+          if (isActive) {
+            onStop();
+            return;
+          }
+          if (selected !== undefined) onActivate(selected.id);
+        }}
       >
-        {selected === undefined ? 'Choose an activity' : `Start ${selected.name}`}
+        {centerLabel}
       </button>
     </div>
   );
