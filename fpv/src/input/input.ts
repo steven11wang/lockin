@@ -134,7 +134,13 @@ export class InputManager {
   }
 
   connectedGamepad(): Gamepad | null {
-    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let pads: (Gamepad | null)[] = [];
+    try {
+      // Embedded frames may block the Gamepad API by permissions policy.
+      pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    } catch {
+      return null;
+    }
     for (const p of pads) if (p && p.connected) return p;
     return null;
   }
