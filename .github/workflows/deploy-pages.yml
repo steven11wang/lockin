@@ -36,6 +36,11 @@ jobs:
       - name: Build and verify GitHub Pages artifact
         run: npm run verify:pages
 
+      - name: Build FPV Rush game into the Pages artifact
+        run: |
+          npm ci --prefix fpv
+          npm run build:pages --prefix fpv
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 

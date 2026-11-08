@@ -37,12 +37,14 @@ export default defineConfig(({ mode }) => {
         workbox: {
           globPatterns: ['**/*.{js,css,html}'],
           navigateFallback: `${base}index.html`,
+          // The FPV game is a separate app published under /fpv/.
+          navigateFallbackDenylist: [/\/fpv\//],
         },
       }),
     ],
     test: {
       environment: 'jsdom',
-      exclude: [...configDefaults.exclude, 'tests/e2e/**', '.worktrees/**'],
+      exclude: [...configDefaults.exclude, 'tests/e2e/**', '.worktrees/**', 'fpv/**'],
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
       restoreMocks: true,

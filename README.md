@@ -36,6 +36,10 @@ To verify the Pages artifact locally:
 npm run verify:pages
 ```
 
+## FPV Rush game
+
+The `fpv/` folder holds a separate browser FPV drone game (Three.js). The Pages workflow builds it into `dist/fpv`, so it is published at `https://steven11wang.github.io/lockin/fpv/`. See [fpv/README.md](fpv/README.md).
+
 ## Install and use offline
 
 Installation and offline use should be tried with a production build, not the development server:
