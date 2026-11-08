@@ -29,5 +29,6 @@ agent-reach doctor                            # check which backends still need 
 ## Notes
 
 - Read-only: it searches and reads, never posts.
+- The repo ships the skill at `.claude/skills/agent-reach/` (use `/agent-reach`); it still needs the CLI installed.
 - Some channels need extra backends (e.g. `bili` for Bilibili) or a login; run `agent-reach doctor`.
 - In sandboxed/CI environments with a restricted network, calls may fail with a 403 tunnel error.
